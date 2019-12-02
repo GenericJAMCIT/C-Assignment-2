@@ -1,0 +1,487 @@
+// SWT2.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//John A. Meyer
+//#include "pch.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <vector>
+#include <cassert>
+#include <sstream>
+
+using namespace std;
+
+const int bookCap = 25;
+
+
+class product {
+private:
+	string title;
+	string surname;
+	int isbn;
+	float wholesalePrice;
+public:
+	//setting values
+	void setTitle(string);
+	void setSurname(string);
+	void setISBN(int);
+	void setWholesalePrice(float);
+	//returning values
+	string returnTitle();
+	string returnSurname();
+	int returnISBN();
+	float returnWholesalePrice();
+
+	product();//contructor
+	~product();//destrcutor
+};
+
+void product::setTitle(string valTitle)
+{
+	if (valTitle.length() > 0)
+		title = valTitle;
+	else
+	{
+		std::cout << "Incorrect value for title\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void product::setSurname(string valSurname)
+{
+	if (valSurname.length() > 0)
+		surname = valSurname;
+	else
+	{
+		cout << "Incorrect value for surname\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void product::setISBN(int valISBN)
+{
+	if (valISBN > 0)
+		int valISBN = isbn;
+	else
+	{
+		cout << "Incorrect value for ISBN\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void product::setWholesalePrice(float valWholesale)
+{
+	if (valWholesale > 0)
+		float valWholesale = wholesalePrice;
+	else
+	{
+		cout << "Incorrect value for wholesale price\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+string product::returnTitle() 
+{
+	return title;
+}
+
+string product::returnSurname()
+{
+	return surname;
+}
+
+int product::returnISBN()
+{
+	return isbn;
+}
+
+float product::returnWholesalePrice()
+{
+	return wholesalePrice;
+}
+
+product::product()
+{
+	title = " ";
+	surname = " ";
+	isbn = 0;
+	wholesalePrice = 0;
+}
+
+product::~product()
+{
+
+}
+
+class stock : public product
+{
+public:
+	float retailPrice;
+	string bookFormat;
+	int stockLevel;
+
+	void setRetailPrice(float);
+	void setBookFormat(string);
+	void setStockLevel(int);
+
+	float returnRetailPrice();
+	string returnBookFormat();
+	int returnStockLevel();
+
+	stock();
+	~stock();
+};
+
+void stock::setRetailPrice(float valRetailPrice)
+{
+	string a = "a";
+	string e = "e";
+	string h = "h";
+	string s = "s";
+
+	if (valRetailPrice > 0)
+		retailPrice = valRetailPrice;
+	else
+	{
+		cout << "Incorrect value for retail price\n";
+		exit(EXIT_FAILURE);
+	}
+	if (!bookFormat.compare(a)) {
+
+		retailPrice = returnWholesalePrice() + (returnWholesalePrice() * 0.43);
+
+	}
+	else if (!bookFormat.compare(e)) {
+
+		retailPrice = returnWholesalePrice() + (returnWholesalePrice() * 0.08);
+
+	}
+	else if (!bookFormat.compare(h)) {
+
+		retailPrice = returnWholesalePrice() + (returnWholesalePrice() * 0.45);
+
+	}
+	else if (!bookFormat.compare(s)) {
+
+		retailPrice = returnWholesalePrice() + (returnWholesalePrice() * 0.27);
+
+	}
+}
+
+void stock::setBookFormat(string valBookFormat)
+{
+	if (valBookFormat.length() > 0)
+		string valBookFormat = bookFormat;
+	else
+	{
+		cout << "Incorrect value for book format\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void stock::setStockLevel(int valStockLevel)
+{
+	if (valStockLevel > 0)
+		int valStockLevel = stockLevel;
+	else
+	{
+		cout << "Incorrect value for stock level\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+float stock::returnRetailPrice()
+{
+	//setRetailPrice();
+	return retailPrice;
+}
+
+string stock::returnBookFormat()
+{
+	return bookFormat;
+}
+
+int stock::returnStockLevel()
+{
+	return stockLevel;
+}
+
+stock::stock()
+{
+	retailPrice = 0;
+	bookFormat = " ";
+	stockLevel = 0;
+}
+
+stock::~stock()
+{
+
+}
+
+void sortBookShopArray(stock arr[]);
+int returnNumEntry(stock arr[]);
+void thineProcreator(stock arr[]);
+void addBookObj(stock arr[]);
+void deleteBookObj(stock arr[]);
+void outputReport(stock arr[]);
+void orderFileReport(stock arr[]);
+
+int main()
+{
+	product p;
+
+	stock bookShopArray[bookCap];
+
+	string input = "null";
+
+	std::cout << "If you would like to add a book input 'y'. To continue input 'n'. ";
+	std::cin >> input;
+	if (input == "y") {
+		addBookObj(bookShopArray);
+	}
+	else if (input == "n") {
+
+	}
+	std::cout << "\n";
+
+	std::cout << "If you would like to print a report input 'y'. To continue input 'n'.";
+	std::cin >> input;
+	if (input == "y") {
+		orderFileReport(bookShopArray);
+		if (input == "n") {
+			return 0;
+		}
+	}
+	std::cout << "\n";
+
+	std::cout << "If you would like to delete a specific book input 'y'. To continue input 'n'.";
+	std::cin >> input;
+	if (input == "y") {
+		deleteBookObj(bookShopArray);
+
+	}
+	std::cout << "\n";
+
+	outputReport(bookShopArray);
+
+	return 0;
+}
+
+void thineProcreator(stock arr[]) {
+
+	string surname;
+	string title;
+	int stockLevel;
+	string bookFormat;
+	int isbn;
+	float wholesalePrice;
+
+	ifstream inProducts;
+	inProducts.open("products.txt");
+	if (inProducts.is_open()) {
+		for (int i = 0; i < 25; i++) {
+
+			inProducts >> surname;
+			inProducts >> title;
+			inProducts >> stockLevel;
+			inProducts >> bookFormat;
+			inProducts >> isbn;
+			inProducts >> wholesalePrice;
+
+			arr[i].setSurname(surname);
+			arr[i].setTitle(title);
+			arr[i].setStockLevel(stockLevel);
+			arr[i].setBookFormat(bookFormat);
+			arr[i].setISBN(isbn);
+			arr[i].setWholesalePrice(wholesalePrice);
+		}
+		inProducts.close();
+	}
+	else {
+		cout << "The specified file does not exist " << std::endl;
+	}
+}
+
+void addBookObj(stock arr[])
+{
+	for (int i = 0; i < 25; i++)
+	{
+		string surname;
+		string title;
+		int stockLevel;
+		string bookFormat;
+		int isbn;
+		float wholesalePrice;
+
+		string a = "a";
+		string e = "e";
+		string h = "h";
+		string s = "s";
+
+		cout << "\n";
+		cout << "Input Author Name: ";
+		cin >> surname;
+		cout << "\n";
+
+		cout << "Input title of book: ";
+		cin >> title;
+		cout << "\n";
+
+		std::cout << "Input number of item in stock: ";
+		cin >> stockLevel;
+		cout << "\n";
+
+		cout << "Input format of book: ";
+		cin >> bookFormat;
+		cout << "\n";
+
+		cout << "Input the ISBN number: ";
+		cin >> isbn;
+		cout << "\n";
+
+		cout << "Input wholesale price of book: ";
+		cin >> wholesalePrice;
+		cout << "\n";
+
+		arr[0].setSurname(surname);
+		arr[0].setTitle(title);
+		arr[0].setStockLevel(stockLevel);
+		arr[0].setBookFormat(bookFormat);
+		arr[0].setISBN(isbn);
+		arr[0].setWholesalePrice(wholesalePrice);
+
+		break;
+	}
+}
+
+void deleteBookObj(stock arr[]) {
+
+		cout << "\n";
+		cout << "#########################################################################\n";
+		cout << "                              Book List \n";
+		cout << "#########################################################################\n";
+		cout << "ID" << "Title";
+		cout << "\n";
+
+		for (int i = 0; i < returnNumEntry(arr); i++) {
+
+			cout << i + 1 << arr[i].returnTitle() << "\n";
+		}
+
+		int id = 0;
+
+		cout << "\n";
+		cout << "Unput ID of book to be deleted: ";
+		cin >> id;
+		std::cin.clear();
+		
+
+		cout << "\n";
+
+		for (int i = id - 1; i < returnNumEntry(arr) + 1; i++) {
+			arr[i] = arr[i + 1];
+			if (arr[i + 1].returnTitle() == "") {
+				arr[i].setSurname("");
+				arr[i].setTitle("");
+				arr[i].setStockLevel(0);
+				arr[i].setBookFormat("");
+				arr[i].setISBN(0);
+				arr[i].setWholesalePrice(0);
+				break;
+			}
+		}
+		cout << "Book succesfully deleted.";
+	}
+
+void outputReport(stock arr[])
+	{
+		ofstream outFile;
+		outFile.open("report.txt");
+		sortBookShopArray(arr);
+
+		outFile << "-----------------------------------------------------------------------------\n";
+		outFile << "                           << Biblioden Books >>\n";
+		outFile << "-----------------------------------------------------------------------------\n";
+		outFile << "-----------------------------------------------------------------------------\n";
+		outFile << "ISBN           title              author       Retail Price        Stock Level";
+		outFile << "-----------------------------------------------------------------------------\n";
+
+
+
+	}
+
+void orderFileReport(stock arr[])
+{
+	string title;
+	int stock;
+	string currentLine;
+
+	ifstream orders;
+	orders.open("orders.txt");
+
+	if (orders.is_open())
+	{
+		cout << "#############################################################\n";
+		cout << "                             ORDER REPORT                    \n";
+		cout << "#############################################################\n";
+		while (getline(orders, currentLine))
+		{
+			string title;
+			int quantity;
+
+			istringstream stream(currentLine);
+
+			string quantityRAW;
+
+			getline(stream, title, ' ');
+			getline(stream, quantityRAW, ' ');
+
+			quantity = stoi(quantityRAW);
+			string outputLine = "";
+			if (quantity > 0)
+			{
+				outputLine += " is in stock ";
+			}
+			else
+			{
+				outputLine += " is not in stock ";
+			}
+			
+			cout << title << " " << outputLine << endl;
+		}
+	}
+
+}
+
+void sortBookShopArray(stock arr[]) {
+
+	bool swaped = true;
+	stock temp;
+
+	for (int i = 0; i < returnNumEntry(arr); i++) {
+		swaped = false;
+		for (int j = 0; j < returnNumEntry(arr) - 1; j++) {
+
+			if (arr[j + 1].returnBookFormat() < arr[j].returnBookFormat()) {
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+				swaped = true;
+
+			}
+
+		}
+	}
+}
+
+int returnNumEntry(stock arr[]) {
+
+	int count = 0;
+
+	for (int i = 0; i < 25; i++) {
+		if (arr[i].returnSurname() != "/0")
+			count++;
+	}
+
+	return count;
+}
