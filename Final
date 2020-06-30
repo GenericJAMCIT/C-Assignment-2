@@ -1,0 +1,523 @@
+// SWT2.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//John A. Meyer
+//#include "pch.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <vector>
+#include <cassert>
+#include <sstream>
+
+using namespace std;
+const int bookCap = 25; //constant integer
+
+class product { //creates product class
+private:
+	string title;//declaring variables
+	string author;
+	string isbn;
+	double wholesaleValue;
+public:
+	void setTitle(string);//setting values
+	void setAuthor(string);
+	void setISBN(string);
+	void setWholesaleValue(double);
+
+	string returnTitle();//returning values
+	string returnAuthor();
+	string returnISBN();
+	double returnWholesaleValue();
+
+	product();//constructor/destructor
+	~product();
+};
+
+void product::setTitle(string valTitle)//fucntions for setting class values along with exception handling
+{
+	if (valTitle.length() > 0)//checks if title is empty
+		title = valTitle;
+	else
+	{
+		std::cout << "Incorrect value for title\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void product::setAuthor(string valAuth)
+{
+	if (valAuth.length() > 0)
+		author = valAuth;
+	else
+	{
+		cout << "Incorrect value for author\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void product::setISBN(string valISBN)
+{
+	if (valISBN.length() > 0)
+		isbn = valISBN;
+	else
+	{
+		cout << "Incorrect value for ISBN\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+void product::setWholesaleValue(double valWholesale)
+{
+	if (valWholesale >= 0)//checks that double value is more than zero
+		wholesaleValue = valWholesale;
+	else
+	{
+		cout << "Incorrect value for wholesale price\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+string product::returnTitle()//functions for returning class values
+{
+	return title;
+}
+
+string product::returnAuthor()
+{
+	return author;
+}
+
+string product::returnISBN()
+{
+	return isbn;
+}
+
+double product::returnWholesaleValue()
+{
+	return wholesaleValue;
+}
+
+product::product() {//constructor
+	title = "null";
+	author = "null";
+	isbn = "null";
+	wholesaleValue = 0;
+}
+
+product::~product() {}//destructor
+
+class stock : public product {//creates derived class
+
+public:
+	double retailValue;
+	string bookFormat;
+	int stockLevel;
+
+	void setBookFormat(string inFormat);
+	void setStockLevel(int inLvl);
+	void setRetailValue(double valRetailValue);
+
+	string returnBookFormat();
+	int returnStockLevel();
+	double returnRetailValue();
+
+	stock();
+	~stock();
+
+};
+
+void stock::setRetailValue(double valRetailValue) {//sets retail value based on book format
+
+	string a = "a";
+	string e = "e";
+	string h = "h";
+	string s = "s";
+
+	if (valRetailValue > 0)
+		retailValue = valRetailValue;
+	else
+	{
+		cout << "Incorrect value for retail price\n";
+		exit(EXIT_FAILURE);
+	}
+	if (!bookFormat.compare(a)) {
+
+		retailValue = returnWholesaleValue() + (returnWholesaleValue() * 0.43);
+	}
+	else if (!bookFormat.compare(e)) {
+
+		retailValue = returnWholesaleValue() + (returnWholesaleValue() * 0.08);
+	}
+	else if (!bookFormat.compare(h)) {
+
+		retailValue = returnWholesaleValue() + (returnWholesaleValue() * 0.45);
+	}
+	else if (!bookFormat.compare(s)) {
+
+		retailValue = returnWholesaleValue() + (returnWholesaleValue() * 0.27);
+	}
+}
+
+void stock::setBookFormat(string valBookFormat)
+{
+	if (valBookFormat != "e" && valBookFormat != "a" && valBookFormat != "s" && valBookFormat != "h")
+	{
+		cout << "Incorrect value for book format\n";
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		bookFormat = valBookFormat;
+	}
+}
+
+void stock::setStockLevel(int valStockLevel)
+{
+	if (valStockLevel >= 0)
+		stockLevel = valStockLevel;
+	else
+	{
+		cout << "Incorrect value for stock level\n";
+		exit(EXIT_FAILURE);
+	}
+}
+
+double stock::returnRetailValue()
+{
+	return retailValue;
+}
+
+string stock::returnBookFormat()
+{
+	return bookFormat;
+}
+
+int stock::returnStockLevel()
+{
+	return stockLevel;
+}
+
+stock::stock() {
+	retailValue = 0;
+	bookFormat = "null";
+	stockLevel = 0;
+}
+
+stock::~stock() {}
+
+void thineProcreator(stock arr[]);//fills class array
+void addBookObj(stock arr[]);//adds book object to array
+void deleteBookObj(stock arr[], int size);//deletes book object in array
+int returnNumEntry(stock arr[]);//returns number of elements in array
+void shiftArrayRight(stock arr[], int size);//shifts the array one index to the right
+void printOrdersSummary(stock arr[], int size);//prints order summary
+void writeFileSummary(stock arr[], int size);//prints to file summary of array
+int compareStock(stock arr[], int size, string inTitle, int inStock);//this function compares elements of an array with two variables
+
+int main() {
+
+	product p;
+
+	stock bookShopArray[bookCap];//declaring array
+	thineProcreator(bookShopArray);//filling array
+
+	string input;//declaring string variable for user input
+
+	cout << "If you would like to add a book input 'y'. To continue input 'n'. ";
+	cin >> input;
+	if (input == "y") {
+		addBookObj(bookShopArray);
+	}
+	else if (input == "n") {
+	}
+	cout << "\n";
+
+	cout << "If you would like to print a report input 'y'. To continue input 'n'.";
+	cin >> input;
+	if (input == "y") {
+		printOrdersSummary(bookShopArray, returnNumEntry(bookShopArray));
+		if (input == "n") {
+			return 0;
+		}
+	}
+	cout << "\n";
+
+	cout << "If you would like to delete a specific book input 'y'. To continue input 'n'.";
+	cin >> input;
+	if (input == "y") {
+		deleteBookObj(bookShopArray, returnNumEntry(bookShopArray));
+	}
+	cout << "\n";
+	writeFileSummary(bookShopArray, returnNumEntry(bookShopArray));
+	return 0;
+}
+
+void thineProcreator(stock arr[]) {//function for fill class array from file
+
+	string author;//declaring variables
+	string title;
+	int stockLevel;
+	string bookFormat;
+	string isbn;
+	double wholesaleValue;
+
+	ifstream inProducts;//declaring file stream/opening file
+	inProducts.open("products.txt");
+	if (inProducts.is_open()) {//checks if file is open
+		for (int i = 0; i < 21; i++) {//loops through lines
+
+			inProducts >> author;//assigns variables
+			inProducts >> title;
+			inProducts >> stockLevel;
+			inProducts >> bookFormat;
+			inProducts >> isbn;
+			inProducts >> wholesaleValue;
+
+			arr[i].setAuthor(author);//sets variables in array index
+			arr[i].setTitle(title);
+			arr[i].setStockLevel(stockLevel);
+			arr[i].setBookFormat(bookFormat);
+			arr[i].setISBN(isbn);
+			arr[i].setWholesaleValue(wholesaleValue);
+			arr[i].setRetailValue(wholesaleValue);
+		}
+		inProducts.close();//closes file
+	}
+	else {
+		cout << "The specified file does not exist " << std::endl;//message if opening file fails
+	}
+}
+
+void addBookObj(stock arr[]) //adds book object to array
+{
+	shiftArrayRight(arr, returnNumEntry(arr));//shifts elements so that input can occupy index 0
+
+	string author;
+	string title;
+	int stockLevel;
+	string bookFormat;
+	string isbn;
+	double wholesaleValue;
+
+	string a = "a";
+	string e = "e";
+	string h = "h";
+	string s = "s";
+
+	cout << "\n";
+	cout << "Input Author Name: ";
+	cin >> author;
+	cout << "\n";
+
+	cout << "Input title of book: ";
+	cin >> title;
+	cout << "\n";
+
+	std::cout << "Input number of item in stock: ";
+	cin >> stockLevel;
+	cout << "\n";
+
+	cout << "Input format of book: ";
+	cin >> bookFormat;
+	cout << "\n";
+
+	cout << "Input the ISBN number: ";
+	cin >> isbn;
+	cout << "\n";
+
+	cout << "Input wholesale price of book: ";
+	cin >> wholesaleValue;
+	cout << "\n";
+
+	arr[0].setAuthor(author);//sets variables at index 0
+	arr[0].setTitle(title);
+	arr[0].setStockLevel(stockLevel);
+	arr[0].setBookFormat(bookFormat);
+	arr[0].setISBN(isbn);
+	arr[0].setWholesaleValue(wholesaleValue);
+	arr[0].setRetailValue(wholesaleValue);
+}
+//https://codereview.stackexchange.com/questions/28354/comparing-two-arrays
+//source for portions of the printOrderSummary() function
+void printOrdersSummary(stock arr[], int size)
+{
+	string title;//delcaring variables
+	int stock;
+
+	ifstream orders;
+	orders.open("orders.txt");
+
+	if (orders.is_open())
+	{
+		cout << "###############################################################\n";
+		cout << "                             ORDER REPORT                      \n";
+		cout << "###############################################################\n";
+		for (int i = 0; i < 5; i++)//loops through lines of the file
+		{
+			orders >> title;//assigning variables
+			orders >> stock;
+
+			int result = compareStock(arr, size, title, stock);//function for comparing elements in array with elements of file
+
+			if (result == 1)//checks for result from compareStock() function
+				{
+					cout << title << " is available at Biblioden with enough copies in stock. \n";
+				}
+				else if (result == 2)
+				{
+					cout << title << " is currently available but we are low on stock. \n";
+				}
+				else
+				{
+					cout << title << " is currently not sold here. \n";
+				}
+			}		
+		orders.close();
+	}
+	else
+	{
+		cout << "The file [orders.txt] couldn't be open " << endl;
+	}
+}
+
+void deleteBookObj(stock arr[], int size)//deletes book object in array
+{
+	int id;
+
+	cout << "\n";
+	cout << "#########################################################################\n";
+	cout << "                              Book List \n";
+	cout << "#########################################################################\n";
+	cout << "ID" << " " << "Title";
+	cout << "\n";
+
+	for (int i = size; i >= 0; i--)//loops through array and prints the titles with incremented ID variable
+	{
+		if (arr[i].returnTitle() != "null") {
+			cout << i + 1 << " " << arr[i].returnTitle() << "\n";
+		}
+	}
+
+	cout << "\n";
+	cout << "Unput the ID of book to be deleted: ";
+	cin >> id;
+	cin.clear();
+	cout << "\n";
+
+	int i = id - 1;
+
+	arr[i].setAuthor("null");
+	arr[i].setTitle("null");
+	arr[i].setStockLevel(0);
+	arr[i].setBookFormat("null");
+	arr[i].setISBN("null");
+	arr[i].setWholesaleValue(0);
+		
+	cout << "Book succesfully deleted.";
+}
+
+void writeFileSummary(stock arr[], int size)//writes summary to file
+{
+
+	ofstream outReport;
+	outReport.open("report.txt");
+
+	outReport << "\n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "                                       << Biblioden Books >> \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "Audiobooks: \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "ISBN                Title                       Author              Retail Price         Stock Level       \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	for (int i = 0; i < size; i++) {
+		if (arr[i].returnBookFormat() == "a") {
+			outReport << setw(20) << left << arr[i].returnISBN();
+			outReport << setw(28) << arr[i].returnTitle();
+			outReport << setw(20) << arr[i].returnAuthor() << "$";
+			outReport << setw(20) << arr[i].returnRetailValue();
+			outReport << setw(20) << arr[i].returnStockLevel() << "\n";
+		}
+	}
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "eBook: \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "ISBN                Title                       Author              Retail Price         Stock Level       \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	for (int i = 0; i < size; i++) {
+		if (arr[i].returnBookFormat() == "e") {
+			outReport << setw(20) << left << arr[i].returnISBN();
+			outReport << setw(28) << arr[i].returnTitle();
+			outReport << setw(20) << arr[i].returnAuthor() << "$";
+			outReport << setw(20) << arr[i].returnRetailValue();
+			outReport << setw(20) << arr[i].returnStockLevel() << "\n";
+		}
+	}
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "Harcover: \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "ISBN                Title                       Author              Retail Price         Stock Level       \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	for (int i = 0; i < size; i++) {
+		if (arr[i].returnBookFormat() == "h") {
+			outReport << setw(20) << left << arr[i].returnISBN();
+			outReport << setw(28) << arr[i].returnTitle();
+			outReport << setw(20) << arr[i].returnAuthor() << "$";
+			outReport << setw(20) << arr[i].returnRetailValue();
+			outReport << setw(20) << arr[i].returnStockLevel() << "\n";
+		}
+	}
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "Softcover: \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	outReport << "ISBN                Title                       Author              Retail Price         Stock Level       \n";
+	outReport << "-----------------------------------------------------------------------------------------------------------\n";
+	for (int i = 0; i < size; i++) {
+		if (arr[i].returnBookFormat() == "s") {
+			outReport << setw(20) << left << arr[i].returnISBN();
+			outReport << setw(28) << arr[i].returnTitle();
+			outReport << setw(20) << arr[i].returnAuthor() << "$";
+			outReport << setw(20) << arr[i].returnRetailValue();
+			outReport << setw(20) << arr[i].returnStockLevel() << "\n";
+		}
+	}
+	outReport.close();
+}
+
+int returnNumEntry(stock arr[])//finds size of the array
+{
+	int counter = 0;
+	for (int i = 0; i < bookCap; i++)
+	{
+		if (arr[i].returnTitle() != "null")
+			counter++;
+	}
+	return counter;
+}
+
+void shiftArrayRight(stock arr[], int size)//shifts index of array to the right
+{
+	for (int i = size + 1; i > 0; i--) {
+		arr[i] = arr[i - 1];
+	}
+}
+
+int compareStock(stock arr[], int size, string inTitle, int inStock)//compares elements inside stock array with title and stock variables
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (arr[i].returnTitle() == inTitle && arr[i].returnStockLevel() >= inStock)
+		{
+			return 1;
+		}
+		else if (arr[i].returnTitle() == inTitle && arr[i].returnStockLevel() < inStock)
+		{
+			return 2;
+		}
+		else if (arr[i].returnTitle() != inTitle)
+		{
+			continue;
+		}
+	}
+}
